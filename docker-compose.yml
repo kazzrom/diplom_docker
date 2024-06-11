@@ -1,0 +1,51 @@
+version: "3.8"
+
+services:
+  db:
+    image: mysql
+    container_name: mysql-docker
+    # restart: unless-stopped
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=hjvfirf
+      - MYSQL_DATABASE=curator_journal
+    volumes:
+      - ./data/db:/var/lib/mysql
+
+  backend:
+    depends_on:
+      - db
+    image: kazzromdocker/curatorjourmal-backend
+    container_name: api-docker
+    # restart: unless-stopped
+    restart: always
+    ports:
+      - 5000:5000
+    environment:
+      - DOCKER_CLIENT_URL=frontend-docker
+      - DB_HOST=mysql-docker
+      - DB_NAME=curator_journal
+      - DB_USERNAME=root
+      - DB_PASSWORD=hjvfirf
+      - DB_PORT=3306
+
+  frontend:
+    image: kazzromdocker/curatorjourmal-frontend
+    container_name: frontend-docker
+    depends_on:
+      - backend
+    restart: always
+    ports:
+      - 80:80
+    environment:
+      - API_URL=backend
+
+  phpmyadmin:
+    depends_on:
+      - db
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      - PMA_ARBITRARY=1
