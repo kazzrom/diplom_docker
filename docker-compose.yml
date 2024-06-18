@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3.3"
 
 services:
   db:
@@ -15,14 +15,15 @@ services:
   backend:
     depends_on:
       - db
-    image: kazzromdocker/curatorjourmal-backend
+    image: kazzromdocker/curatorjourmal-backend:final
+    # build: ./backend
     container_name: api-docker
     # restart: unless-stopped
     restart: always
     ports:
       - 5000:5000
     environment:
-      - DOCKER_CLIENT_URL=frontend-docker
+      - DOCKER_CLIENT_URL=http://79.174.92.153
       - DB_HOST=mysql-docker
       - DB_NAME=curator_journal
       - DB_USERNAME=root
@@ -30,15 +31,15 @@ services:
       - DB_PORT=3306
 
   frontend:
-    image: kazzromdocker/curatorjourmal-frontend
-    container_name: frontend-docker
     depends_on:
       - backend
+    image: kazzromdocker/curatorjourmal-frontend:final
+    # build: ./frontend
     restart: always
     ports:
       - 80:80
     environment:
-      - API_URL=backend
+      - API_URL=http://79.174.92.153:5000
 
   phpmyadmin:
     depends_on:
